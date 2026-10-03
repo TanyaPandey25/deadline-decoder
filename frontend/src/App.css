@@ -1,0 +1,188 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f5f2;
+  color: #242424;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.header {
+  padding: 28px 8%;
+  border-bottom: 1px solid #ddd8d0;
+  background: #ffffff;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.tagline {
+  margin: 6px 0 0;
+  color: #6d6862;
+}
+
+.main {
+  width: min(1000px, 90%);
+  margin: 0 auto;
+  padding: 70px 0;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.intro h1 {
+  font-size: 48px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.intro h1 span {
+  color: #8b2f39;
+}
+
+.intro p {
+  max-width: 650px;
+  margin: 0 auto;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #6d6862;
+}
+
+.input-section {
+  background: white;
+  padding: 30px;
+  border: 1px solid #ddd8d0;
+  border-radius: 16px;
+}
+
+.input-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  padding: 16px;
+  border: 1px solid #cfc9c1;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #8b2f39;
+}
+
+button {
+  margin-top: 16px;
+  padding: 13px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #8b2f39;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 15px;
+  color: #b42318;
+}
+
+.result-section {
+  margin-top: 50px;
+}
+
+.result-section h2 {
+  margin-bottom: 25px;
+}
+
+.deadline-card {
+  padding: 28px;
+  background: #fff4f4;
+  border: 1px solid #e4c5c5;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.card-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #8b2f39;
+}
+
+.deadline {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.result-card {
+  padding: 24px;
+  background: white;
+  border: 1px solid #ddd8d0;
+  border-radius: 14px;
+}
+
+.result-card h3 {
+  margin-top: 0;
+}
+
+.result-card ul {
+  padding-left: 20px;
+}
+
+.result-card li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.warning-card {
+  background: #fffaf0;
+}
+
+@media (max-width: 700px) {
+  .intro h1 {
+    font-size: 36px;
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .main {
+    padding: 40px 0;
+  }
+}
