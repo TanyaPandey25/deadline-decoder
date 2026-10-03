@@ -3,6 +3,7 @@ import "./App.css";
 
 function App() {
   const [notice, setNotice] = useState("");
+  const [pdfFile, setPdfFile] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -44,6 +45,46 @@ function App() {
     }
   };
 
+  const decodePdf = async () => {
+    if (!pdfFile) {
+      setError("Please choose a PDF first.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", pdfFile);
+
+      const response = await fetch("http://127.0.0.1:8000/decode-pdf", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+
+        throw new Error(
+          errorData.detail || "Failed to decode the PDF."
+        );
+      }
+
+      const data = await response.json();
+
+      setResult(data);
+    } catch (err) {
+      setError(
+        err.message ||
+          "Could not connect to Deadline Decoder. Make sure the backend is running."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="app">
       <header className="header">
@@ -63,8 +104,8 @@ function App() {
           </h1>
 
           <p>
-            Paste a college notice below and Deadline Decoder will identify
-            what you actually need to do.
+            Paste a college notice or upload a PDF and Deadline Decoder will
+            identify what you actually need to do.
           </p>
         </section>
 
@@ -75,11 +116,43 @@ function App() {
             id="notice"
             value={notice}
             onChange={(event) => setNotice(event.target.value)}
-            placeholder="Paste your college notice here..."
+            placeholder="Paste a college notice here..."
           />
 
           <button onClick={decodeNotice} disabled={loading}>
             {loading ? "Decoding..." : "Decode Notice"}
+          </button>
+
+          <div className="pdf-divider">
+            <span>OR</span>
+          </div>
+
+          <label htmlFor="pdf">Upload a PDF</label>
+
+          <input
+            id="pdf"
+            type="file"
+            accept=".pdf,application/pdf"
+            onChange={(event) => {
+              const file = event.target.files[0];
+
+              setPdfFile(file || null);
+              setError("");
+              setResult(null);
+            }}
+          />
+
+          {pdfFile && (
+            <p className="file-name">
+              Selected: {pdfFile.name}
+            </p>
+          )}
+
+          <button
+            onClick={decodePdf}
+            disabled={loading || !pdfFile}
+          >
+            {loading ? "Decoding..." : "Decode PDF"}
           </button>
 
           {error && <p className="error">{error}</p>}
