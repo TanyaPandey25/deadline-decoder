@@ -4,6 +4,7 @@ import "./App.css";
 function App() {
   const [notice, setNotice] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -85,6 +86,49 @@ function App() {
     }
   };
 
+  const decodeImage = async () => {
+    if (!imageFile) {
+      setError("Please choose an image first.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/decode-image",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+
+        throw new Error(
+          errorData.detail || "Failed to decode the image."
+        );
+      }
+
+      const data = await response.json();
+
+      setResult(data);
+    } catch (err) {
+      setError(
+        err.message ||
+          "Could not connect to Deadline Decoder. Make sure the backend is running."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="app">
       <header className="header">
@@ -104,12 +148,14 @@ function App() {
           </h1>
 
           <p>
-            Paste a college notice or upload a PDF and Deadline Decoder will
-            identify what you actually need to do.
+            Paste a college notice, upload a PDF, or upload a screenshot
+            and Deadline Decoder will identify what you actually need to do.
           </p>
         </section>
 
         <section className="input-section">
+          {/* TEXT INPUT */}
+
           <label htmlFor="notice">College notice</label>
 
           <textarea
@@ -122,6 +168,8 @@ function App() {
           <button onClick={decodeNotice} disabled={loading}>
             {loading ? "Decoding..." : "Decode Notice"}
           </button>
+
+          {/* PDF INPUT */}
 
           <div className="pdf-divider">
             <span>OR</span>
@@ -153,6 +201,40 @@ function App() {
             disabled={loading || !pdfFile}
           >
             {loading ? "Decoding..." : "Decode PDF"}
+          </button>
+
+          {/* IMAGE INPUT */}
+
+          <div className="pdf-divider">
+            <span>OR</span>
+          </div>
+
+          <label htmlFor="image">Upload a screenshot</label>
+
+          <input
+            id="image"
+            type="file"
+            accept="image/png,image/jpeg"
+            onChange={(event) => {
+              const file = event.target.files[0];
+
+              setImageFile(file || null);
+              setError("");
+              setResult(null);
+            }}
+          />
+
+          {imageFile && (
+            <p className="file-name">
+              Selected: {imageFile.name}
+            </p>
+          )}
+
+          <button
+            onClick={decodeImage}
+            disabled={loading || !imageFile}
+          >
+            {loading ? "Decoding..." : "Decode Screenshot"}
           </button>
 
           {error && <p className="error">{error}</p>}

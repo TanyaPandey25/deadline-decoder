@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from services.ai_service import decode_notice
+from services.ai_service import decode_notice, decode_image
 from services.pdf_service import extract_text_from_pdf
 
 
@@ -69,4 +69,30 @@ async def decode_pdf(file: UploadFile = File(...)):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to process PDF: {str(e)}"
+        )
+
+@app.post("/decode-image")
+async def decode_image_endpoint(file: UploadFile = File(...)):
+    
+    
+    if file.content_type not in ["image/png", "image/jpeg", "image/jpg"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Please upload a PNG or JPEG image."
+        )
+
+    image_bytes = await file.read()
+
+    try:
+        result = decode_image(
+            image_bytes,
+            file.content_type
+        )
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process image: {str(e)}"
         )

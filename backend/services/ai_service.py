@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 from models.deadline_result import DeadlineResult
 
@@ -58,6 +59,47 @@ COLLEGE NOTICE:
             "response_mime_type": "application/json",
             "response_schema": DeadlineResult,
         },
+    )
+
+    return DeadlineResult.model_validate_json(response.text)
+
+def decode_image(image_bytes: bytes, mime_type: str) -> DeadlineResult:
+    """Decode a college notice from an image."""
+
+    prompt = """
+    Read the college notice in this image and decode it into the required
+    structured format.
+
+    Extract:
+    - the title of the notice
+    - the actual deadline for the required action
+    - what the student needs to do
+    - how they need to submit it
+    - required materials
+    - important warnings
+    - priority, only if explicitly stated
+
+    Important rules:
+    - Do not invent or guess information.
+    - If a deadline is not specified, return "Not specified".
+    - Distinguish between an event date and a submission deadline.
+    - Include all relevant tasks and requirements.
+    - If something is not specified, use "Not specified".
+    """
+
+    response = client.models.generate_content(
+        model="gemma-4-26b-a4b-it",
+        contents=[
+            types.Part.from_bytes(
+                data=image_bytes,
+                mime_type=mime_type,
+            ),
+            prompt,
+        ],
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=DeadlineResult,
+        ),
     )
 
     return DeadlineResult.model_validate_json(response.text)
